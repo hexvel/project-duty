@@ -1,11 +1,14 @@
-const { VK, API } = require('vk-io');
+const express = require('express');
+const app = express();
 
-updates.on('message', async (message) => {
-  console.log(message);
+app.use(express.json());
+
+app.post('/callback', (req, res) => {
+  const data = req.body;
+  console.log(data);
+  res.send('ok');
 });
 
-cmd.hear(/привет/i, async (message, bot) => {
-  message.send("Привет!");
-})
-
-vk.updates.start().catch(console.error)
+app.listen(5000, () =>
+  console.log('Сервер с портом 3000 запущен')
+);
