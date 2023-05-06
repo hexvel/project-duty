@@ -6,14 +6,14 @@ export class Events {
         this.api = new API({token: this.token})
         this.event = event
 
-        // this.online_token = this.event['online_token']
-        // this.me_token = this.event['me_token']
-        this.secret = this.event['secret']
-        // this.chats = this.event['chats']
-        // this.owner_id = this.event['owner_id']
-        this.duty_id = this.event['duty_id']
-        // this.host = this.event['host']
-        // this.installed = this.event['installed']
+        // // this.online_token = this.event['online_token']
+        // // this.me_token = this.event['me_token']
+        // this.secret = this.event['secret']
+        // // this.chats = this.event['chats']
+        // // this.owner_id = this.event['owner_id']
+        // this.duty_id = this.event['duty_id']
+        // // this.host = this.event['host']
+        // // this.installed = this.event['installed']
     }
 
     getUserId() {
@@ -21,7 +21,7 @@ export class Events {
     }
 
     getSecret() {
-        return this.secret;
+        return this.event['secret'];
     }
 
     getMethod() {

@@ -14,8 +14,10 @@ class Commands {
     }
 
     async getCommands() {
-        if (this.event.getMethod() === Methods.ADD_USER) {
-            await ping(this.api, this.message, this.event);
+        if (this.event.getMethod() === Methods.SEND_MY_SIGNAL) {
+            if (this.message.text === ".с пинг") {
+                await ping(this.api, this.message);
+            }
         }
     }
 }
