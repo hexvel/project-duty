@@ -1,11 +1,27 @@
 const express = require('express');
 const app = express();
 const fs = require('fs');
+const {join} = require("path");
 
 const database = JSON.parse(fs.readFileSync('./database.json'));
+const {API} = require("vk-io");
 
 app.use(express.json());
 app.use(express.static('public'));
+
+class Events {
+  constructor(token) {
+    this.token = token
+    this.api = new API({token: this.token})
+  }
+
+  async getOwnerId(userId) {
+    return await this.api.users.get({
+      user_ids: userId
+    })
+  }
+}
+
 
 class Main {
   constructor(api) {
@@ -13,14 +29,21 @@ class Main {
   }
 
   genSecret(length) {
-    const chars = 'abdehkmnpswxzABDEFGHKMNPQRSTWXZ123456789';
-    let secret_key = '';
-    for (var i = 0; i < length; i++) {
-      var pos = Math.floor(Math.random() * chars.length);
-      secret_key += chars.substring(pos, pos + 1);
+    const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    let result = '';
+    for (let i =0; i< length; i++) {
+      result += chars[Math.floor(Math.random() * chars.length)];
     }
-    return secret_key;
+    return result;
   }
+
+  saveDatabase(data) {
+    try {
+      fs.writeFileSync('./database.json', JSON.stringify(data));
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
   server(port) {
     app.post('/callback', (req, res) => {
@@ -30,18 +53,19 @@ class Main {
         database.duty_id = req.body.user_id
         database.owner_id = req.body.user_id
         database.installed = true
-        fs.writeFileSync('./database.json', JSON.stringify(database))
+        this.saveDatabase(database)
       }
+      new Events(database.access_token).getOwnerId(database.duty_id).then(r => console.log(r[0]['id']))
       res.send('ok');
     });
 
+
     app.get('/', (req, res) => {
-      if (!database.installed) {
-        res.sendFile('index.html', {root: path.join(__dirname, 'public')})
-      } else {
-        res.sendFile('home.html', {root: path.join(__dirname, 'public/main')})
-      }
-    })
+      const isInstalled = database.installed
+      const fileName = isInstalled ? 'home.html' : 'index.html'
+      const filePath = isInstalled ? 'public/main' : 'public'
+      res.sendFile(fileName, { root: join(__dirname, filePath)})
+    });
 
     app.listen(port, () => {
       console.log(`Сервер с портом ${port} запущен`)
