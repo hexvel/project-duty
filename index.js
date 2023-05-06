@@ -16,7 +16,7 @@ export class Main {
     constructor(api) {
         this.api = api
         this.vk = new VK({token: database.access_token})
-        this.req = null
+        this.message = null
     }
 
     genSecret(length) {
@@ -29,7 +29,7 @@ export class Main {
     }
 
     server(port) {
-        app.post('/callback', (req, res) => {
+        app.post('/callback', async (req, res) => {
             const events = new Events(database.access_token, req.body);
 
             if (events.getSecret() !== database.secret) {
@@ -38,7 +38,7 @@ export class Main {
             if (events.getUserId() !== database.duty_id) {
                 res.send("Неверный ID дежурного")
             } else {
-                this.req = req.body
+                await new Commands(this.message, this.api, req.body).getCommands();
                 res.send('ok');
             }
         });
@@ -53,9 +53,7 @@ export class Main {
         app.listen(port, async () => {
             this.vk.updates.on('message', async (message) => {
                 await message.loadMessagePayload()
-                setTimeout(async () => {
-                    await new Commands(message, this.api, this.req).getCommands();
-                }, 300)
+                this.message = message
             });
             await this.vk.updates.start()
             console.log(`Сервер с портом ${port} запущен`)
