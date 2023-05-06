@@ -38,16 +38,8 @@ export class Main {
             if (events.getUserId() !== database.duty_id) {
                 res.send("Неверный ID дежурного")
             } else {
-                await new Commands(this.message, this.api, req.body).getCommands();
-                res.send('ok');
+                await new Commands(this.message, this.api, req.body).getCommands(res);
             }
-        });
-
-        app.get('/', (req, res) => {
-            const isInstalled = database.installed
-            const fileName = isInstalled ? 'home.html' : 'index.html'
-            const filePath = isInstalled ? 'public/main' : 'public'
-            res.sendFile(fileName, {root: path.join(__dirname, filePath)})
         });
 
         app.listen(port, async () => {

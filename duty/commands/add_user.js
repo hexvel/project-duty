@@ -1,4 +1,4 @@
-export const add_user = async (api, message, event) => {
+export const add_user = async (res, api, message, event) => {
     try {
         await api.messages.addChatUser({
             chat_id: message.peerId - 2000000000,
@@ -9,8 +9,15 @@ export const add_user = async (api, message, event) => {
             message_id: message.id,
             message: "✅ Пригласил."
         })
-        return "ok"
+        res.send("ok")
     } catch (e) {
-        return `Произошка ошибка\n${e}`
+        if (e.code === 15) {
+            await api.messages.send({
+                peer_id: message.peerId,
+                message: "❎ Не удалось добавить участника\nВозможно он(-а) не в моих друзьях.",
+                random_id: 0
+            })
+        }
+        res.send(`Произошка ошибка\n${e}`)
     }
 }

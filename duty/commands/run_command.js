@@ -3,6 +3,8 @@ import Methods from '../objects/methods.js'
 
 import { ping } from './ping.js';
 import { add_user } from "./add_user.js";
+import { ban_expired } from "./ban_expired.js";
+import { delete_messages_from_user } from './delete_messages_from_user.js';
 
 import fs from 'fs';
 
@@ -16,14 +18,26 @@ class Commands {
         this.event = event
     }
 
-    async getCommands() {
-        if (this.events.getMethod() === Methods.SEND_MY_SIGNAL) {
+    async getCommands(res) {
+        if (this.events.getMethod() === Methods.PING) {
+            return "ok"
+        }
+        else if (this.events.getMethod() === Methods.SEND_MY_SIGNAL) {
             if (this.message.text === ".с пинг") {
-                await ping(this.api, this.message);
+                await ping(res, this.api, this.message);
             }
         }
         else if (this.events.getMethod() === Methods.ADD_USER) {
-            await add_user(this.api, this.message, this.event);
+            await add_user(res, this.api, this.message, this.event);
+        }
+        else if (this.events.getMethod() === Methods.BAN_EXPIRED) {
+            await ban_expired(res, this.api, this.message, this.event)
+        }
+        else if (this.events.getMethod() === Methods.DELETE_MESSAGES) {
+            console.log(res, this.event)
+        }
+        else if (this.events.getMethod() === Methods.DELETE_MESSAGES_FROM_USER) {
+            await delete_messages_from_user(res, this.api, this.message, this.event)
         }
     }
 }
