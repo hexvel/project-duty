@@ -1,31 +1,22 @@
-const express = require('express');
-const app = express();
-const fs = require('fs');
-const {join} = require("path");
+import express from 'express'
+import fs from "fs";
+import path from "path";
+import { VK, API } from 'vk-io';
 
+import { Events } from "./duty/objects/events.js";
+import Commands from './duty/commands/run_command.js'
+
+const app = express();
 const database = JSON.parse(fs.readFileSync('./database.json'));
-const {API} = require("vk-io");
 
 app.use(express.json());
 app.use(express.static('public'));
 
-class Events {
-  constructor(token) {
-    this.token = token
-    this.api = new API({token: this.token})
-  }
-
-  async getOwnerId(userId) {
-    return await this.api.users.get({
-      user_ids: userId
-    })
-  }
-}
-
-
-class Main {
+export class Main {
   constructor(api) {
     this.api = api
+    this.vk = new VK({token: database.access_token})
+    this.req = null
   }
 
   genSecret(length) {
@@ -37,42 +28,47 @@ class Main {
     return result;
   }
 
-  saveDatabase(data) {
-    try {
-      fs.writeFileSync('./database.json', JSON.stringify(data));
-    } catch (err) {
-      console.error(err);
-    }
-  };
-
   server(port) {
     app.post('/callback', (req, res) => {
-      console.log(req.body)
-      if (!database.installed) {
-        database.secret = this.genSecret(68)
-        database.duty_id = req.body.user_id
-        database.owner_id = req.body.user_id
-        database.installed = true
-        this.saveDatabase(database)
-      }
-      new Events(database.access_token).getOwnerId(database.duty_id).then(r => console.log(r[0]['id']))
-      res.send('ok');
-    });
+      const events = new Events(database.access_token, req.body);
 
+      if (events.getSecret() !== database.secret) {
+        res.send("Неверный секретный код")
+      }
+      if (events.getUserId() !== database.duty_id) {
+        res.send("Неверный ID дежурного")
+      }
+      else {
+        this.req = req.body
+        res.send('ok');
+      }
+    });
 
     app.get('/', (req, res) => {
       const isInstalled = database.installed
       const fileName = isInstalled ? 'home.html' : 'index.html'
       const filePath = isInstalled ? 'public/main' : 'public'
-      res.sendFile(fileName, { root: join(__dirname, filePath)})
+      res.sendFile(fileName, { root: path.join(__dirname, filePath)})
     });
 
-    app.listen(port, () => {
+    app.listen(port, async () => {
+      this.vk.updates.on('message_new', async (message) => {
+        // await message.loadMessagePayload()
+        setTimeout(async () => {
+          await new Commands(message, this.api, this.req).getCommands();
+          console.log(this.req)
+        }, 500)
+      });
+      await this.vk.updates.start()
       console.log(`Сервер с портом ${port} запущен`)
     });
   }
 
 }
 
-const _class = new Main("тест")
+const api = new API({
+  token: database.access_token
+})
+
+const _class = new Main(api)
 _class.server(5000)
