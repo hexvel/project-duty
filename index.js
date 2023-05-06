@@ -1,10 +1,13 @@
 const express = require('express');
 const app = express();
+const fs = require('fs');
+
+const database = JSON.parse(fs.readFileSync('./database.json'));
 
 app.use(express.json());
+app.use(express.static('public'));
 
 class Main {
-
   constructor(api) {
     this.api = api
   }
@@ -21,18 +24,28 @@ class Main {
 
   server(port) {
     app.post('/callback', (req, res) => {
-      const data = req.body;
+      console.log(req.body)
+      if (!database.installed) {
+        database.secret = this.genSecret(68)
+        database.duty_id = req.body.user_id
+        database.owner_id = req.body.user_id
+        database.installed = true
+        fs.writeFileSync('./database.json', JSON.stringify(database))
+      }
       res.send('ok');
     });
 
-    app.get('/getKey/', (req, res) => {
-      const secret_key = this.genSecret(96)
-      res.send(`Ваш секретный ключ: ${secret_key}`)
+    app.get('/', (req, res) => {
+      if (!database.installed) {
+        res.sendFile('index.html', {root: path.join(__dirname, 'public')})
+      } else {
+        res.sendFile('home.html', {root: path.join(__dirname, 'public/main')})
+      }
     })
 
-    app.listen(port, () =>
-      console.log('Сервер с портом 5000 запущен')
-    );
+    app.listen(port, () => {
+      console.log(`Сервер с портом ${port} запущен`)
+    });
   }
 
 }

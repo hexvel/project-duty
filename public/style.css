@@ -1,0 +1,111 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+}
+
+:root {
+    --box-shadow: 0px 5px 29px 14px rgba(30, 30, 30, 0.418);
+}
+
+body {
+    font-family: 'Roboto', sans-serif;
+    background: #272727;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 60px;
+    background: #1d1d1d;
+    box-shadow: var(--box-shadow);
+}
+
+.logo {
+    align-items: center;
+    color: #ffffff;
+    font-size: 24px;
+    cursor: pointer;
+    margin: 0 12px;
+}
+
+.header .profile {
+    color: rgb(255, 255, 255);
+    opacity: 0.5;
+    cursor: pointer;
+    margin: 0 12px;
+}
+
+
+.header .profile p:hover {
+    text-decoration: underline;
+}
+
+main {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.container-input {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 40vh;
+    width: 90vh;
+    margin-top: 120px;
+    background: #1d1d1d;
+    color: #ffffff;
+    border-radius: 12px;
+    transition: 0.2s;
+    box-shadow: var(--box-shadow);
+}
+
+.form-auth_token {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    width: 80%;
+}
+
+.form-auth_token .token {
+    background: transparent;
+    border: 1px solid rgba(4, 167, 255, 0.639);
+    padding: 0.375rem 0.75rem;
+    font-weight: 400;
+    line-height: 1.5;
+    outline: none;
+    color: #ffffff;
+    font-size: 18px;
+    border-radius: 4px;
+    margin-top: 12px;
+    height: 40px;
+    width: 100%;
+}
+
+.form-auth_token .token::placeholder {
+    color: #ffffff;
+    opacity: 0.5;
+    font-size: 18px;
+}
+
+.send-token {
+    padding: 20px;
+    margin-top: 20px;
+    background: transparent;
+    color: #ffffff;
+    font-size: 18px;
+    border-radius: 8px;
+    border: 1px solid rgba(4, 167, 255, 0.639);
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.send-token:hover {
+    background: rgba(4, 167, 255, 0.639);
+    box-shadow: 0px 0px 22px 3px rgba(4, 167, 255, 0.639);
+    border: none;
+}
