@@ -5,6 +5,7 @@ import { ping } from './ping.js';
 import { add_user } from "./add_user.js";
 import { ban_expired } from "./ban_expired.js";
 import { delete_messages_from_user } from './delete_messages_from_user.js';
+import { messages_recognise_audio_message } from "./messages_recognise_audio_message.js";
 
 import fs from 'fs';
 
@@ -38,6 +39,9 @@ class Commands {
         }
         else if (this.events.getMethod() === Methods.DELETE_MESSAGES_FROM_USER) {
             await delete_messages_from_user(res, this.api, this.message, this.event)
+        }
+        else if (this.events.getMethod() === Methods.MESSAGES_RECOGNISE_AUDIO_MESSAGE) {
+            await messages_recognise_audio_message(res, this.api, this.message)
         }
     }
 }

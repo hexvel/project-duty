@@ -1,20 +1,9 @@
-const get_all_history_gen = async (api, chat_id, offset = 0) => {
-    let chat = await api.messages.getHistory({
-        count: 1,
-        peer_id: chat_id,
-        offset: offset
-    })
+const get_all_history = async (api, chat_id, offset = 0) => {
+    let chat = await api.messages.getHistory({count: 1, peer_id: chat_id, offset: offset})
     let count = chat['count']
     while (offset < count) {
-        try {
-            chat = await api.messages.getHistory({
-                count: 200,
-                peer_id: chat_id,
-                offset: offset
-            })
-        } catch (e) {
-            continue;
-        }
+        try {chat = await api.messages.getHistory({count: 200, peer_id: chat_id, offset: offset})}
+        catch (e) {continue;}
         offset += 200
         return chat['items']
     }
@@ -32,7 +21,7 @@ export const delete_messages_from_user = async (res, api, message, event) => {
     let message_ids = []
     const message_id = await api.messages.send({peer_id: chat_id, message: "✅ Удаляю сообщения...", random_id: 0})
 
-    for (let message of await get_all_history_gen(api, chat_id)) {
+    for (let message of await get_all_history(api, chat_id)) {
         let timestamp = Math.floor(Date.now() / 1000);
         if (timestamp - message['date'] >= 86400) {
             break;
@@ -54,11 +43,18 @@ export const delete_messages_from_user = async (res, api, message, event) => {
                 spam: 1 ? event['object']['is_spam'] : 0
             });
             await api.messages.edit({peer_id: chat_id, message: "✅ Сообщения успешно удалены.", message_id: message_id})
+            res.send("ok")
         } catch (e) {
             if (e.code === 924) {
                 const send_message = "❗ Не удалось удалить сообщения.\n" +
                     "Невозможно удалить сообщение, возможно пользователь администратор."
                 await api.messages.edit({peer_id: chat_id, message: send_message, message_id: message_id})
+                res.send(`Ошибка доступа: ${e}`)
+            } else {
+                const send_message = "❗ Не удалось удалить сообщения.\n" +
+                    `Ошибка со стороны серверов VK: ${e}`
+                await api.messages.edit({peer_id: chat_id, message: send_message, message_id: message_id})
+                res.send(`Произошка ошибка: ${e}`)
             }
         }
     }
