@@ -3,7 +3,9 @@ import Methods from '../objects/methods.js'
 
 import { ping } from './ping.js';
 import { add_user } from "./add_user.js";
+import { bind_chat } from "./bind_chat.js";
 import { ban_expired } from "./ban_expired.js";
+import { subscribe_signals } from "./subscribe_signals.js";
 import { delete_messages_from_user } from './delete_messages_from_user.js';
 import { messages_recognise_audio_message } from "./messages_recognise_audio_message.js";
 
@@ -21,7 +23,7 @@ class Commands {
 
     async getCommands(res) {
         if (this.events.getMethod() === Methods.PING) {
-            return "ok"
+            res.send("ok")
         }
         else if (this.events.getMethod() === Methods.SEND_MY_SIGNAL) {
             if (this.message.text === ".с пинг") {
@@ -42,6 +44,12 @@ class Commands {
         }
         else if (this.events.getMethod() === Methods.MESSAGES_RECOGNISE_AUDIO_MESSAGE) {
             await messages_recognise_audio_message(res, this.api, this.message)
+        }
+        else if (this.events.getMethod() === Methods.BIND_CHAT) {
+            await bind_chat(res, this.api, this.message)
+        }
+        else if (this.events.getMethod() === Methods.SUBSCRIBE_SIGNALS) {
+            await subscribe_signals(res, this.api, this.message, this.event)
         }
     }
 }

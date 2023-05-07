@@ -31,14 +31,13 @@ export class Main {
     server(port) {
         app.post('/callback', async (req, res) => {
             const events = new Events(database.access_token, req.body);
-
             if (events.getSecret() !== database.secret) {
                 res.send("Неверный секретный код")
             }
             if (events.getUserId() !== database.duty_id) {
                 res.send("Неверный ID дежурного")
             } else {
-                await new Commands(this.message, this.api, req.body).getCommands(res);
+                await new Commands(this.message, this.api, req.body).getCommands(res)
             }
         });
 
