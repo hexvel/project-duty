@@ -3,8 +3,10 @@ import Methods from '../objects/methods.js'
 
 import { ping } from './ping.js';
 import { add_user } from "./add_user.js";
+import { hire_api } from "./hire_api.js";
 import { bind_chat } from "./bind_chat.js";
 import { ban_expired } from "./ban_expired.js";
+import { ban_get_reason } from "./ban_get_reason.js";
 import { subscribe_signals } from "./subscribe_signals.js";
 import { delete_messages_from_user } from './delete_messages_from_user.js';
 import { messages_recognise_audio_message } from "./messages_recognise_audio_message.js";
@@ -17,8 +19,9 @@ class Commands {
     constructor(message, api, event) {
         this.api = api
         this.message = message
-        this.events = new Events(database.access_token, event)
-        this.event = event
+        this.events = new Events(database.access_token, event.body)
+        this.event = event.body
+        this.rawHeader = event.rawHeaders[1]
     }
 
     async getCommands(res) {
@@ -49,7 +52,13 @@ class Commands {
             await bind_chat(res, this.api, this.message)
         }
         else if (this.events.getMethod() === Methods.SUBSCRIBE_SIGNALS) {
-            await subscribe_signals(res, this.api, this.message, this.event)
+            await subscribe_signals(res, this.api, this.message, this.event, this.rawHeader)
+        }
+        else if (this.events.getMethod() === Methods.HIRE_API) {
+            await hire_api(res, this.api, this.message, this.event)
+        }
+        else if (this.events.getMethod() === Methods.BAN_GET_REASON) {
+            await ban_get_reason(res, this.api, this.message, this.event)
         }
     }
 }

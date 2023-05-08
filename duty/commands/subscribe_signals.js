@@ -2,12 +2,12 @@ import fs from 'fs';
 
 const database = JSON.parse(fs.readFileSync('./database.json', 'utf-8'));
 
-export async function subscribe_signals(res, api, message, event) {
+export async function subscribe_signals(res, api, message, event, panel) {
     const chat = event['object']['chat']
     const send_message = "✅ Отлично, теперь я дежурный в этой беседе.\nИнформация и беседе:\n" +
         `Iris chatId: ${chat}
         Id чата: ${message.peerId - 2000000000}
-        Панель: в разработке.`
+        Панель: ${panel}`
 
     let _obj = {};
 

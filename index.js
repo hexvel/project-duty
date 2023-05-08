@@ -1,13 +1,12 @@
 import express from 'express'
 import fs from "fs";
-import path from "path";
 import {VK, API} from 'vk-io';
 
 import {Events} from "./duty/objects/events.js";
 import Commands from './duty/commands/run_command.js'
 
 const app = express();
-const database = JSON.parse(fs.readFileSync('./database.json'));
+const database = JSON.parse(fs.readFileSync('./database.json', 'utf-8'));
 
 app.use(express.json());
 app.use(express.static('public'));
@@ -37,7 +36,7 @@ export class Main {
             if (events.getUserId() !== database.duty_id) {
                 res.send("Неверный ID дежурного")
             } else {
-                await new Commands(this.message, this.api, req.body).getCommands(res)
+                await new Commands(this.message, this.api, req).getCommands(res)
             }
         });
 
@@ -50,7 +49,6 @@ export class Main {
             console.log(`Сервер с портом ${port} запущен`)
         });
     }
-
 }
 
 const api = new API({
