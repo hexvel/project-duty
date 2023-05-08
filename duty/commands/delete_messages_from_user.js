@@ -31,31 +31,30 @@ export const delete_messages_from_user = async (res, api, message, event) => {
         }
         if (amount) {
             if (amount <= message_ids.length) {
-                let count = message_ids.length - message_ids.length - amount;
+                let count = (message_ids.length) - (message_ids.length - amount);
                 message_ids = message_ids.slice(0, count)
             }
         }
-
-        try {
-            await api.messages.delete({
-                message_ids: message_ids,
-                delete_for_all: 1,
-                spam: 1 ? event['object']['is_spam'] : 0
-            });
-            await api.messages.edit({peer_id: chat_id, message: "✅ Сообщения успешно удалены.", message_id: message_id})
-            res.send("ok")
-        } catch (e) {
-            if (e.code === 924) {
-                const send_message = "❗ Не удалось удалить сообщения.\n" +
-                    "Невозможно удалить сообщение, возможно пользователь администратор."
-                await api.messages.edit({peer_id: chat_id, message: send_message, message_id: message_id})
-                res.send(`Ошибка доступа: ${e}`)
-            } else {
-                const send_message = "❗ Не удалось удалить сообщения.\n" +
-                    `Ошибка со стороны серверов VK: ${e}`
-                await api.messages.edit({peer_id: chat_id, message: send_message, message_id: message_id})
-                res.send(`Произошка ошибка: ${e}`)
-            }
+    }
+    try {
+        await api.messages.delete({
+            message_ids: message_ids,
+            delete_for_all: 1,
+            spam: 1 ? event['object']['is_spam'] : 0
+        });
+        await api.messages.edit({peer_id: chat_id, message: "✅ Сообщения успешно удалены.", message_id: message_id})
+        res.send("ok")
+    } catch (e) {
+        if (e.code === 924) {
+            const send_message = "❗ Не удалось удалить сообщения.\n" +
+                "Невозможно удалить сообщение, возможно пользователь администратор."
+            await api.messages.edit({peer_id: chat_id, message: send_message, message_id: message_id})
+            res.send('ok')
+        } else {
+            const send_message = "❗ Не удалось удалить сообщения.\n" +
+                `Ошибка со стороны серверов VK: ${e}`
+            await api.messages.edit({peer_id: chat_id, message: send_message, message_id: message_id})
+            res.send('ok')
         }
     }
 }

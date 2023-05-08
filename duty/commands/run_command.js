@@ -8,6 +8,7 @@ import { bind_chat } from "./bind_chat.js";
 import { ban_expired } from "./ban_expired.js";
 import { ban_get_reason } from "./ban_get_reason.js";
 import { subscribe_signals } from "./subscribe_signals.js";
+import { group_bots_invited } from "./group_bots_invited.js";
 import { delete_messages_from_user } from './delete_messages_from_user.js';
 import { messages_recognise_audio_message } from "./messages_recognise_audio_message.js";
 
@@ -59,6 +60,9 @@ class Commands {
         }
         else if (this.events.getMethod() === Methods.BAN_GET_REASON) {
             await ban_get_reason(res, this.api, this.message, this.event)
+        }
+        else if (this.events.getMethod() === Methods.GROUPBOTS_INVITED) {
+            await group_bots_invited(res, this.api, this.event)
         }
     }
 }
