@@ -6,7 +6,7 @@ export const ban_expired = async (res, api, message, event) => {
     const send_message = `✡ У [id${user_id}|${userInfo[0]['first_name']} ${userInfo[0]['last_name']}] истёк срок бана.`
 
     await api.messages.send({
-        peer_id: message.peerId,
+        peer_id: message.peer_id,
         message: send_message,
         random_id: 0
     })

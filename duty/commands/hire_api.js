@@ -1,3 +1,3 @@
-export async function hire_api(res, api, message, event) {
+export async function hire_api(res, api, event) {
     res.send({response: "ok", days: event['object']['price']})
 }

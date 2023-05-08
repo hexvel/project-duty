@@ -12,7 +12,7 @@ const get_all_history = async (api, chat_id, offset = 0) => {
 
 export const delete_messages_from_user = async (res, api, message, event) => {
     const member_id = event['object']['user_id']
-    const chat_id = message.peerId
+    const chat_id = message.peer_id
     let amount = event['object']['amount'] ? 'amount' in event['object'] : false
     if (amount) {
         amount = event['object']['amount']
